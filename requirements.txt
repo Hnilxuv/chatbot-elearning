@@ -1,0 +1,10 @@
+langchain
+langchain_ollama
+langchain_community
+langchain-chroma>=0.1.2
+chromadb
+fastapi
+uvicorn
+requests
+mysql-connector-python
+pypdf

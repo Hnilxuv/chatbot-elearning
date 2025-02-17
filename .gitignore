@@ -1,0 +1,43 @@
+# Bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Cấu hình môi trường ảo (Virtual environment)
+venv/
+env/
+.env/
+.venv/
+.env
+
+# Cấu hình IDEs
+.vscode/
+.idea/
+
+# Các thư mục liên quan đến cấu hình của hệ thống
+.DS_Store
+Thumbs.db
+
+# Các tệp liên quan đến các công cụ như pytest, coverage, hoặc tox
+.coverage
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Tệp cache của Python
+*.log
+*.sqlite3
+
+# Tệp lock (pipenv, poetry, etc)
+Pipfile.lock
+poetry.lock
+
+# Các tệp liên quan đến Jupyter Notebook
+.ipynb_checkpoints/
+
+# Các tệp khác có thể được tạo ra trong quá trình phát triển
+*.bak
+*.swp
+
+chroma_db/
