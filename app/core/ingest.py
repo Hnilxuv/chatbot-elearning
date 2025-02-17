@@ -25,16 +25,19 @@ class RAG:
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
         self.prompt = ChatPromptTemplate.from_template(
             """
-            You are a helpful assistant developed to answer questions only based on the uploaded documents.
+            You are a helpful assistant developed to answer questions based on the uploaded documents.
             If the question is not related to the document, tell the user that the question is out of scope.
+
             Context:
             {context}
 
             Question:
             {question}
 
-            You only give precise and detailed answer to the question, no yapping. 
-            And when giving an answer, please start with "Answer:".
+            You only give precise and detailed answer to the question, no unnecessary information.
+            When answering, please start with "Answer:".
+
+            If the question is in Vietnamese, answer in Vietnamese. If the question is in English, answer in English.
             """
         )
         self.memory = ConversationBufferMemory(memory_key="history", return_messages=True)
