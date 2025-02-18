@@ -12,6 +12,6 @@ async def ask_chatbot(question: str, rag: RAG = Depends(get_rag)):
     return {"answer": response}
 
 @router.post("/update_file_data")
-async def update_file_data(collection_name: str, url: str, rag: RAG = Depends(get_rag)):
-    response = rag.upload_file_data(collection_name, url)
+async def update_file_data(file_url: str, file_type: str, rag: RAG = Depends(get_rag)):
+    response = rag.upload_file_data(file_url, file_type)
     return {"answer": response}
