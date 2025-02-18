@@ -8,9 +8,12 @@ from langchain_chroma import Chroma
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 from langchain_community.vectorstores.utils import filter_complex_metadata
-from app.core.db import get_db_connection
 from app.utils.extract import extract_text_from_pdf
-from app.core.settings import CHROMA_DB_PATH, OLLAMA_EMBEDDING, OLLAMA_MODEL
+
+
+CHROMA_DB_PATH = "./chroma_db"
+OLLAMA_MODEL = "llama3"
+OLLAMA_EMBEDDING = "nomic-embed-text"
 
 # Cấu hình logging để debug
 logging.basicConfig(level=logging.INFO)
@@ -35,8 +38,8 @@ class RAG:
             {question}
 
             You only give precise and detailed answer to the question, no unnecessary information.
-            When answering, please start with "Answer:".
-
+            If the question is unrelated to the course, respond with:
+            "Your question is not related to the course content. Please ask a relevant question."
             If the question is in Vietnamese, answer in Vietnamese. If the question is in English, answer in English.
             """
         )
@@ -62,24 +65,6 @@ class RAG:
         logging.info(f"Dữ liệu đã được xử lý và lưu vào ChromaDB: {collection_name}")
         return "Dữ liệu đã được xử lý và lưu vào ChromaDB!"
 
-    def ingest_data(self):
-        """Fetches lessons from the database, extracts text, and stores it in ChromaDB."""
-        logging.info("Bắt đầu xử lý dữ liệu và lưu vào ChromaDB...")
-        db = get_db_connection()
-        cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM lessons")
-        lessons = cursor.fetchall()
-
-        for lesson in lessons:
-            if lesson["type"] != "file":
-                continue
-            collection_name = f"course_{lesson.get('course_id')}"
-            text = extract_text_from_pdf(lesson["video_url"])
-            self._process_and_store_text(collection_name, text)
-            logging.info(f"Đã xử lý xong bài học {lesson['id']} trong khóa {lesson['course_id']}")
-
-        db.close()
-        return "Tất cả dữ liệu đã được xử lý và lưu vào ChromaDB!"
 
     def chat(self, query):
         """Answers a query using the RAG pipeline."""
@@ -106,26 +91,8 @@ class RAG:
         logger.info("Generating response using the LLM.")
         return chain.invoke(formatted_input)
 
-    def upload_lesson_data(self, lesson_id):
-        """Uploads data for a specific lesson into ChromaDB."""
-        db = get_db_connection()
-        cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM lessons WHERE id = %s", (lesson_id,))
-        lesson = cursor.fetchone()
 
-        if not lesson:
-            return {"message": "Bài học không tồn tại!"}
-        if lesson["type"] != "file":
-            return {"message": "Bài học không phải là file!"}
-
-        course = cursor.fetchone()
-        collection_name = f"course_{lesson.get('course_id')}"
-
-        text = extract_text_from_pdf(lesson["video_url"])
-        db.close()
-        return self._process_and_store_text(collection_name, text)
-
-    def upload_file_data(self, collection_name, video_url):
+    def upload_file_data(self,collection_name, video_url):
         """Uploads data from a file to a specific collection in ChromaDB."""
         text = extract_text_from_pdf(video_url)
         return self._process_and_store_text(collection_name, text)

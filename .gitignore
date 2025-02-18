@@ -39,5 +39,3 @@ poetry.lock
 # Các tệp khác có thể được tạo ra trong quá trình phát triển
 *.bak
 *.swp
-
-chroma_db/

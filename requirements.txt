@@ -6,5 +6,4 @@ chromadb
 fastapi
 uvicorn
 requests
-mysql-connector-python
 pypdf
